@@ -14,46 +14,34 @@ import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 @Controller
-@RequestMapping("/")
-public class MainController {
+@RequestMapping("/admin")
+public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
 
     @Autowired
-    public MainController(UserService userService, RoleService roleService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
 
     @GetMapping()
-    public String index() {
-        return "index";
-    }
-
-    @GetMapping("/user")
-    public String readUser(Principal principal, Model model) {
-        model.addAttribute("user", userService.findByUsername(principal.getName()));
-        return "user";
-    }
-
-    @GetMapping("/admin")
     public String readAllUsers(Model model) {
         model.addAttribute("users", userService.readAllUsers());
         return "admin_page";
     }
 
-    @GetMapping("/admin/create")
+    @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("roles", roleService.findAll());
         return "create";
     }
 
-    @PostMapping("/admin/createauser")
+    @PostMapping("/createauser")
     public String create(@ModelAttribute("user") @Valid User user,
                          BindingResult bindingResult,
                          @RequestParam("role") String selectedRole) {
@@ -69,14 +57,14 @@ public class MainController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/update")
+    @GetMapping("/update")
     public String updateForm(Model model,
                              @RequestParam("id") Long id) {
         model.addAttribute(userService.readUserById(id));
         return "update";
     }
 
-    @PostMapping("/admin/updateauser")
+    @PostMapping("/updateauser")
     public String update(@ModelAttribute("user") @Valid User user,
                          BindingResult bindingResult,
                          @RequestParam("role") String selectedRole,
@@ -93,14 +81,14 @@ public class MainController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/delete")
+    @GetMapping("/delete")
     public String deleteForm(Model model,
                              @RequestParam("id") Long id) {
         model.addAttribute(userService.readUserById(id));
         return "delete";
     }
 
-    @PostMapping("/admin/deleteauser")
+    @PostMapping("/deleteauser")
     public String delete(@RequestParam("id") Long id) {
         userService.deleteUser(id);
         return "redirect:/admin";
